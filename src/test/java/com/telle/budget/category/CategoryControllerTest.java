@@ -1,6 +1,7 @@
 package com.telle.budget.category;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.telle.budget.payment.PaymentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -34,14 +35,15 @@ class CategoryControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void shouldFindAll() throws Exception {
+    void shouldFindByPaymentType() throws Exception {
         // given
+        PaymentType paymentType = PaymentType.INCOME;
         CategoryDto categoryDto = createSomeCategoryDto();
         List<CategoryDto> categories = List.of(categoryDto);
-        given(categoryFacade.findAll()).willReturn(categories);
+        given(categoryFacade.findByPaymentType(paymentType)).willReturn(categories);
 
         // when
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/categories"));
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/categories?paymentType=" + paymentType));
 
         // then
         result.andExpect(ResultMatcher.matchAll(

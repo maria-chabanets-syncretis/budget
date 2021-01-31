@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.telle.budget.payment.PaymentType.EXPENSE;
+import static com.telle.budget.payment.PaymentType.INCOME;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -44,6 +45,51 @@ public class CategoryRepositoryIT {
         assertThat(actual)
                 .usingRecursiveFieldByFieldElementComparator()
                 .isEqualTo(List.of(category1, category2));
+    }
+
+    @Test
+    void shouldFindAllByPaymentId() {
+        // given
+        Category category1 = saveCategory();
+        Category category2 = saveCategory();
+
+        // when
+        List<Category> actual = categoryRepository.findByPaymentType(EXPENSE);
+
+        // then
+        assertThat(actual)
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(List.of(category1, category2));
+    }
+
+    @Test
+    void shouldFindNoneByNullPaymentId() {
+        // given
+        saveCategory();
+        saveCategory();
+
+        // when
+        List<Category> actual = categoryRepository.findByPaymentType(null);
+
+        // then
+        assertThat(actual)
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(List.of());
+    }
+
+    @Test
+    void shouldFindNoneByPaymentId() {
+        // given
+        saveCategory();
+        saveCategory();
+
+        // when
+        List<Category> actual = categoryRepository.findByPaymentType(INCOME);
+
+        // then
+        assertThat(actual)
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(List.of());
     }
 
     @Test

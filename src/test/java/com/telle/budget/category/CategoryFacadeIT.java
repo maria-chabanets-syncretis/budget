@@ -6,19 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 import static com.telle.budget.payment.PaymentType.EXPENSE;
+import static com.telle.budget.payment.PaymentType.INCOME;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class CategoryFacadeIT {
     private static final String LABEL = "CategoryFacadeIT label";
-    private static final PaymentType PAYMENT_TYPE = EXPENSE;
 
-    @Autowired
-    private EntityManager entityManager;
     @Autowired
     private CategoryFacade categoryFacade;
     @Autowired
@@ -30,17 +27,30 @@ class CategoryFacadeIT {
     }
 
     @Test
-    void shouldFindAll() {
+    void shouldFindByPaymentType() {
         // given
-        Category category1 = saveCategory();
-        Category category2 = saveCategory();
+        PaymentType expense = EXPENSE;
+        Category category1 = saveCategory(expense);
+        Category category2 = saveCategory(expense);
+        saveCategory(INCOME);
 
         // when
-        List<CategoryDto> actual = categoryFacade.findAll();
+        List<CategoryDto> actual = categoryFacade.findByPaymentType(expense);
 
         // then
-        List<CategoryDto> expected = List.of(createCategoryDto(category1.getId()), createCategoryDto(category2.getId()));
+        List<CategoryDto> expected = List.of(
+                createCategoryDto(category1.getId(), expense),
+                createCategoryDto(category2.getId(), expense)
+        );
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+    }
+
+    private CategoryDto createCategoryDto(Long id, PaymentType paymentType) {
+        return CategoryDto.builder()
+                .id(id)
+                .label(LABEL)
+                .paymentType(paymentType.name())
+                .build();
     }
 
     @Test
@@ -59,11 +69,18 @@ class CategoryFacadeIT {
         assertThat(categoryRepository.findAll()).hasSize(1);
     }
 
+    private CategoryDto createCategoryDto() {
+        return CategoryDto.builder()
+                .label(LABEL)
+                .paymentType(EXPENSE.name())
+                .build();
+    }
+
     @Test
     void shouldDeleteById() {
         // given
-        Category category1 = saveCategory();
-        Category category2 = saveCategory();
+        Category category1 = saveCategory(EXPENSE);
+        Category category2 = saveCategory(EXPENSE);
 
         // when
         categoryFacade.deleteById(category1.getId());
@@ -74,29 +91,14 @@ class CategoryFacadeIT {
                 .isEqualTo(List.of(category2));
     }
 
-    private Category saveCategory() {
-        return categoryRepository.save(createCategory());
+    private Category saveCategory(PaymentType paymentType) {
+        return categoryRepository.save(createCategory(paymentType));
     }
 
-    private Category createCategory() {
+    private Category createCategory(PaymentType paymentType) {
         return Category.builder()
                 .label(LABEL)
-                .paymentType(PAYMENT_TYPE)
-                .build();
-    }
-
-    private CategoryDto createCategoryDto() {
-        return CategoryDto.builder()
-                .label(LABEL)
-                .paymentType(PAYMENT_TYPE.name())
-                .build();
-    }
-
-    private CategoryDto createCategoryDto(Long id) {
-        return CategoryDto.builder()
-                .id(id)
-                .label(LABEL)
-                .paymentType(PAYMENT_TYPE.name())
+                .paymentType(paymentType)
                 .build();
     }
 }

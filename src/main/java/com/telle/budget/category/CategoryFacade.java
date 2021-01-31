@@ -1,5 +1,6 @@
 package com.telle.budget.category;
 
+import com.telle.budget.payment.PaymentType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +17,8 @@ public class CategoryFacade {
         this.categoryMapper = CategoryMapper.INSTANCE;
     }
 
-    public List<CategoryDto> findAll() {
-        return categoryService.findAll().stream()
+    public List<CategoryDto> findByPaymentType(PaymentType paymentType) {
+        return categoryService.findByPaymentType(paymentType).stream()
                 .map(categoryMapper::mapToDto)
                 .collect(toList());
     }

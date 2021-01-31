@@ -2,6 +2,7 @@ package com.telle.budget.category;
 
 import com.telle.budget.exception.Messages;
 import com.telle.budget.exception.NotFoundException;
+import com.telle.budget.payment.PaymentType;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +33,21 @@ class CategoryServiceTest {
         given(categoryRepository.findAll()).willReturn(categories);
 
         // when
-        List<Category> actual = categoryService.findAll();
+        List<Category> actual = categoryService.findByPaymentType(null);
+
+        // then
+        assertThat(actual).isEqualTo(categories);
+    }
+
+    @Test
+    void shouldFindByPaymentType() {
+        // given
+        PaymentType paymentType = PaymentType.EXPENSE;
+        List<Category> categories = createCategories();
+        given(categoryRepository.findByPaymentType(paymentType)).willReturn(categories);
+
+        // when
+        List<Category> actual = categoryService.findByPaymentType(paymentType);
 
         // then
         assertThat(actual).isEqualTo(categories);
