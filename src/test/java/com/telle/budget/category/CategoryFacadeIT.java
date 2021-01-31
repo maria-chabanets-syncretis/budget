@@ -29,17 +29,46 @@ class CategoryFacadeIT {
     @Test
     void shouldFindAll() {
         // given
-        saveCategory();
-        saveCategory();
+        Category category1 = saveCategory();
+        Category category2 = saveCategory();
 
         // when
         List<CategoryDto> actual = categoryFacade.findAll();
 
         // then
-        List<CategoryDto> expected = List.of(createCategoryDto(), createCategoryDto());
+        List<CategoryDto> expected = List.of(createCategoryDto(category1.getId()), createCategoryDto(category2.getId()));
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+    }
+
+    @Test
+    void shouldCreate() {
+        // given
+        CategoryDto categoryDto = createCategoryDto();
+
+        // when
+        CategoryDto actual = categoryFacade.create(categoryDto);
+
+        // then
         assertThat(actual)
-                .usingElementComparatorIgnoringFields("id")
-                .isEqualTo(expected);
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(createCategoryDto());
+        assertThat(categoryRepository.findAll()).hasSize(1);
+    }
+
+    @Test
+    void shouldDeleteById() {
+        // given
+        Category category1 = saveCategory();
+        Category category2 = saveCategory();
+
+        // when
+        categoryFacade.deleteById(category1.getId());
+
+        // then
+        assertThat(categoryRepository.findAll())
+                .usingElementComparatorIgnoringFields()
+                .isEqualTo(List.of(createCategoryDto(category2.getId())));
     }
 
     private Category saveCategory() {
@@ -54,6 +83,13 @@ class CategoryFacadeIT {
 
     private CategoryDto createCategoryDto() {
         return CategoryDto.builder()
+                .label(LABEL)
+                .build();
+    }
+
+    private CategoryDto createCategoryDto(Long id) {
+        return CategoryDto.builder()
+                .id(id)
                 .label(LABEL)
                 .build();
     }

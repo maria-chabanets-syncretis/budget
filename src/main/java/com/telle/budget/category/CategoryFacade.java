@@ -21,4 +21,13 @@ public class CategoryFacade {
                 .map(categoryMapper::mapToDto)
                 .collect(toList());
     }
+
+    public CategoryDto create(CategoryDto categoryDto) {
+        Category saved = categoryService.save(categoryMapper.mapToEntity(categoryDto));
+        return categoryMapper.mapToDto(saved);
+    }
+
+    public void deleteById(Long id) {
+        categoryService.deleteById(id);
+    }
 }
