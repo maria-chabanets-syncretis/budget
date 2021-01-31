@@ -1,5 +1,6 @@
 package com.telle.budget.category;
 
+import com.telle.budget.payment.PaymentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.persistence.EntityManager;
 import java.util.List;
 
+import static com.telle.budget.payment.PaymentType.EXPENSE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class CategoryFacadeIT {
     private static final String LABEL = "CategoryFacadeIT label";
+    private static final PaymentType PAYMENT_TYPE = EXPENSE;
 
     @Autowired
     private EntityManager entityManager;
@@ -67,8 +70,8 @@ class CategoryFacadeIT {
 
         // then
         assertThat(categoryRepository.findAll())
-                .usingElementComparatorIgnoringFields()
-                .isEqualTo(List.of(createCategoryDto(category2.getId())));
+                .usingRecursiveFieldByFieldElementComparator()
+                .isEqualTo(List.of(category2));
     }
 
     private Category saveCategory() {
@@ -78,12 +81,14 @@ class CategoryFacadeIT {
     private Category createCategory() {
         return Category.builder()
                 .label(LABEL)
+                .paymentType(PAYMENT_TYPE)
                 .build();
     }
 
     private CategoryDto createCategoryDto() {
         return CategoryDto.builder()
                 .label(LABEL)
+                .paymentType(PAYMENT_TYPE.name())
                 .build();
     }
 
@@ -91,6 +96,7 @@ class CategoryFacadeIT {
         return CategoryDto.builder()
                 .id(id)
                 .label(LABEL)
+                .paymentType(PAYMENT_TYPE.name())
                 .build();
     }
 }

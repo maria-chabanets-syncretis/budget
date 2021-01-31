@@ -8,4 +8,5 @@ import lombok.Value;
 public class CategoryDto {
     Long id;
     String label;
+    String paymentType;
 }

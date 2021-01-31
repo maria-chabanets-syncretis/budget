@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import java.util.List;
 import java.util.Optional;
 
+import static com.telle.budget.payment.PaymentType.EXPENSE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -111,6 +112,7 @@ public class CategoryRepositoryIT {
     private Category createCategory() {
         return Category.builder()
                 .label(LABEL)
+                .paymentType(EXPENSE)
                 .build();
     }
 }
