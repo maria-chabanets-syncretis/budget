@@ -13,6 +13,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -23,6 +25,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor
 @AllArgsConstructor(access = PRIVATE)
 @Entity
+@Table(name = "category", uniqueConstraints = @UniqueConstraint(columnNames = {"paymentType", "label"}))
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
